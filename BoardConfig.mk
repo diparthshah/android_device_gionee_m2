@@ -67,7 +67,7 @@ BOARD_KERNEL_CMDLINE :=
 TARGET_PREBUILT_KERNEL := $(LOCAL_PATH)/kernel
 BOARD_CUSTOM_BOOTIMG_MK := $(LOCAL_PATH)/MTKbootimg.mk
 BOARD_CUSTOM_BOOTIMG := true
-BOARD_MKBOOTIMG_ARGS := --base 0x10000000 --pagesize 2048 --kernel_offset 0x00008000 --second_offset 0x00f00000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100
+BOARD_MKBOOTIMG_ARGS := --board 409385284 --base 0x10000000 --pagesize 2048 --kernel_offset 0x00008000 --second_offset 0x00f00000 --ramdisk_offset 0x01000000 --tags_offset 0x00000100
 
 
 # Recovery
