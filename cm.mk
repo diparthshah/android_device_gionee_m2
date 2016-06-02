@@ -3,6 +3,10 @@ PRODUCT_RELEASE_NAME := m2
 
 # Inherit from those products. Most specific first.
 $(call inherit-product, $(SRC_TARGET_DIR)/product/full_base_telephony.mk)
+$(call inherit-product, $(SRC_TARGET_DIR)/product/languages_full.mk)
+
+# Inherit Suitabe GPS Code
+$(call inherit-product, device/common/gps/gps_us_supl.mk)
 
 # Inherit some common CM stuff.
 $(call inherit-product, vendor/cm/config/common_full_phone.mk)
