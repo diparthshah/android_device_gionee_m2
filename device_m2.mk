@@ -38,7 +38,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
     lib_driver_cmd_mt66xx
 
-#USE_CUSTOM_AUDIO_POLICY := 1
+# Inherit APN AND SPN 
+PRODUCT_COPY_FILES += \
+$(LOCAL_PATH)/configs/apns-conf.xml:system/etc/apns-conf.xml \
+$(LOCAL_PATH)/configs/selective-spn-conf.xml:system/etc/selective-spn-conf.xml
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/audio_policy.conf:system/etc/audio_policy.conf
@@ -135,7 +138,9 @@ PRODUCT_PROPERTY_OVERRIDES := \
 	ro.mediatek.version.sdk=2 \
 	ro.telephony.sim.count=2 \
 	ro.allow.mock.location=0 \
-	ro.debuggable=1 \
+	ro.debuggable=0 \
+	ro.secure=0 \
+	ro.adb.secure=0 
 	persist.sys.usb.config=mtp,adb \
 	persist.service.adb.enable=1 \
 	persist.service.debuggable=1 \
