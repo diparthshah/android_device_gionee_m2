@@ -157,6 +157,22 @@ on post-fs-data
 # GPS
     mkdir /data/gps_mnl 0771 gps system
     mkdir /data/misc/gps 0770 gps system
+    mkdir /data/misc/gps 0770 gps gps
+    mkdir /data/agps_supl 0771 gps system
+    
+    chmod 0666 /dev/gps
+    chown system gps /dev/gps
+    chmod 0660 /dev/stpgps
+    chown gps gps /dev/stpgps
+
+    chown gps gps /sys/class/gpsdrv/gps/pwrctl
+    chown gps gps /sys/class/gpsdrv/gps/suspend
+    chown gps gps /sys/class/gpsdrv/gps/state
+    chown gps gps /sys/class/gpsdrv/gps/pwrsave
+    chown gps gps /sys/class/gpsdrv/gps/status
+
+
+
 # -----------------------
 # Add by MTK
 
@@ -431,6 +447,7 @@ on post-fs-data
     chmod 0660 /dev/GAF001AF
     chmod 0660 /dev/GAF002AF
     chmod 0660 /dev/GAF008AF
+	chmod 0660 /dev/BU6424AF
     chmod 0660 /dev/CAM_CAL_DRV
     chmod 0660 /dev/EEPROM_M24C08F
 
@@ -446,6 +463,7 @@ on post-fs-data
     chown system camera /dev/GAF001AF
     chown system camera /dev/GAF002AF
     chown system camera /dev/GAF008AF
+	chown system camera /dev/BU6424AF
     chown system camera /dev/CAM_CAL_DRV
     chown system camera /dev/EEPROM_M24C08F
 
@@ -496,23 +514,13 @@ on post-fs-data
     chmod 0660 /dev/ttyMT2
     chown system system /dev/ttyMT2
 
-# GPS
-    chown gps gps /sys/devices/virtual/gpsdrv/gps/pwrctl
-    chown gps gps /sys/devices/virtual/gpsdrv/gps/suspend
-    chown gps gps /sys/devices/virtual/gpsdrv/gps/state
-    chown gps gps /sys/devices/virtual/gpsdrv/gps/pwrsave
-    chown gps gps /sys/devices/virtual/gpsdrv/gps/status
+
 
 
 #
 # Connectivity related device nodes & configuration (end)
 #
 
-# AGPS
-    mkdir /data/agps_supl 0771 gps system
-
-# GPS
-    mkdir /data/gps_mnl 0771 gps system
 
 # Encrypt phone function
     setprop vold.post_fs_data_done 1
@@ -564,8 +572,7 @@ on boot
     chmod 0770 /sys/power/tuxonice
     chmod 0220 /sys/power/tuxonice/do_hibernate
 
-# AGPS
-    mkdir /data/agps_supl 0771 gps system
+
 
 ## Thermal
   #change permissions on thermal devices
@@ -809,17 +816,36 @@ service bluetoothd /system/bin/bluetoothd -n
 service agpsd /system/bin/mtk_agpsd
     class main
     socket agpsd stream 660 gps system
-    socket agpsd2 stream 660 gps inet
-    socket agpsd3 stream 660 gps inet
-    user gps
-    group gps inet sdcard_r sdcard_rw misc radio
+    socket agpsd2 stream 660 gps system
+    socket agpsd3 stream 660 gps system
+    user root
+    group gps ccci inet sdcard_r sdcard_rw misc
+    oneshot
 
 service mnld /system/xbin/mnld
     class main
-    user gps
+    user root
     group system gps inet misc sdcard_rw sdcard_r media_rw
     socket mnld stream 660 gps system
+    oneshot
+
+service wifi2agps /system/bin/wifi2agps
+    class main
+    user root
+    group gps inet
+    oneshot
+
+service BGW /system/xbin/BGW
+    user root
+    group gps system radio
+    class main
+    oneshot
     
+# FM Radio device node
+   exec /system/bin/mknod /dev/fm c 193 0
+   chmod 0777 /dev/fm
+   chown system media /dev/fm
+
 service mdlogger /system/bin/mdlogger
     class main
     user shell
