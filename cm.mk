@@ -4,9 +4,6 @@ PRODUCT_RELEASE_NAME := m2
 # Inherit Complete Device Configuration
 $(call inherit-product, device/gionee/m2/full_m2.mk)
 
-# Inherit Suitabe GPS Code
-$(call inherit-product, device/common/gps/gps_us_supl.mk)
-
 # Inherit some common CM stuff.
 $(call inherit-product, vendor/cm/config/common_full_phone.mk)
 

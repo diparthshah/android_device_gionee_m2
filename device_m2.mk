@@ -42,6 +42,10 @@ PRODUCT_PACKAGES += \
 PRODUCT_COPY_FILES += \
   $(LOCAL_PATH)/configs/apns-conf.xml:system/etc/apns-conf.xml \
   $(LOCAL_PATH)/configs/selective-spn-conf.xml:system/etc/selective-spn-conf.xml
+  
+# Using Prebuilt Gps Configuration From CyanogenMod Common Device Tree 
+PRODUCT_COPY_FILES +=\
+  $(LOCAL_PATH)/configs/gps.conf:system/etc/gps.conf  
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/audio_policy.conf:system/etc/audio_policy.conf
