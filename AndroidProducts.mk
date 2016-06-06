@@ -1,2 +1,2 @@
 PRODUCT_MAKEFILES := \
-    $(LOCAL_DIR)/device_m2.mk
+    device/gionee/m2/full_m2.mk 
