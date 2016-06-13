@@ -1,5 +1,5 @@
 #
-# Copyright 2013 The Android Open Source Project
+# Copyright 2016 The CyanogenMod Project 
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,5 +14,6 @@
 # limitations under the License.
 #
 
+add_lunch_combo cm_m2-user 
 add_lunch_combo cm_m2-userdebug
 add_lunch_combo cm_m2-eng
