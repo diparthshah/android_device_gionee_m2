@@ -37,6 +37,7 @@ brunch cm_m2-userdebug -j#
   * GPS
   * Tethering (Wifi, Bluetooth and USB)
   * USSD
+  * FM Radio
 
 * Known issues
  * Screen Recording  ( Sometimes works with 3rd Party Application )
