@@ -5,13 +5,15 @@ import /init.modem.rc
 on early-init
     mount debugfs /sys/kernel/debug /sys/kernel/debug
     setprop ro.mtk.hardware mt6582
-
+	
 on init
+
     export LD_PRELOAD "/system/lib/libxlog.so /system/lib/libmt6582.so"
     
     mkdir /protect_f 0771 system system
     mkdir /protect_s 0771 system system
-# See storage config details at http://source.android.com/tech/storage/
+	
+	# See storage config details at http://source.android.com/tech/storage/
     mkdir /storage/sdcard 0555 root root
  
     ## Support legacy paths
@@ -28,6 +30,13 @@ on init
     chown root system /proc/lk_env
     chmod 0660 /proc/lk_env
 
+    # GPS
+    chown gps gps /sys/class/gpsdrv/gps/pwrctl
+    chown gps gps /sys/class/gpsdrv/gps/suspend
+    chown gps gps /sys/class/gpsdrv/gps/state
+    chown gps gps /sys/class/gpsdrv/gps/pwrsave
+    chown gps gps /sys/class/gpsdrv/gps/status
+	
 # mount different fs start
 
 on fs
@@ -35,6 +44,40 @@ on fs
     mount_all /fstab.mt6582
     write /proc/bootprof "INIT:eMMC:Mount_All_END"
 
+service agpsd /system/bin/mtk_agpsd
+    class main
+    socket agpsd stream 660 gps system
+    socket agpsd2 stream 660 gps system
+    socket agpsd3 stream 660 gps system
+    user root
+    group gps ccci inet sdcard_r sdcard_rw misc
+    oneshot
+
+service mnld /system/xbin/mnld
+    class main
+    user root
+    group system gps inet misc sdcard_rw sdcard_r media_rw
+    socket mnld stream 660 gps system
+    oneshot
+
+service wifi2agps /system/bin/wifi2agps
+    class main
+    user root
+    group gps inet
+    oneshot
+
+service BGW /system/xbin/BGW
+    user root
+    group gps system radio
+    class main
+    oneshot
+
+# Offline charging
+service ipod /system/bin/ipod
+    user root
+    group root
+    class ipo
+	
 # mount different fs end
 
 on post-fs
@@ -50,6 +93,11 @@ on post-fs
     exec /system/bin/mknod /dev/stpgps c 191 0
     
     exec /system/bin/mknod /dev/stpbt  c 192 0
+    # GPS
+    chmod 0666 /dev/gps
+    chown system gps /dev/gps
+    chmod 0660 /dev/stpgps
+    chown gps gps /dev/stpgps
     chmod 0660 /dev/stpbt
     chown bluetooth radio /dev/stpbt
 
@@ -155,24 +203,10 @@ on post-fs-data
     start adbd
 
 # GPS
-    mkdir /data/gps_mnl 0771 gps system
-    mkdir /data/misc/gps 0770 gps system
-    mkdir /data/misc/gps 0770 gps gps
     mkdir /data/agps_supl 0771 gps system
-    
-    chmod 0666 /dev/gps
-    chown system gps /dev/gps
-    chmod 0660 /dev/stpgps
-    chown gps gps /dev/stpgps
+    mkdir /data/gps_mnl 0771 gps system
 
-    chown gps gps /sys/class/gpsdrv/gps/pwrctl
-    chown gps gps /sys/class/gpsdrv/gps/suspend
-    chown gps gps /sys/class/gpsdrv/gps/state
-    chown gps gps /sys/class/gpsdrv/gps/pwrsave
-    chown gps gps /sys/class/gpsdrv/gps/status
-
-
-
+    mkdir /data/misc/gps 0770 gps gps
 # -----------------------
 # Add by MTK
 
@@ -341,6 +375,7 @@ on post-fs-data
     chmod 0660 /dev/Vcodec
     chown media media /dev/Vcodec
 
+    insmod /system/lib/modules/bma2xx.ko
     #kpd
     chown radio radio /sys/devices/platform/mtk-kpd/driver/kpd_call_state
 
@@ -441,31 +476,27 @@ on post-fs-data
     chmod 0660 /dev/kd_camera_hw
     chmod 0660 /dev/kd_camera_flashlight
     chmod 0660 /dev/kd_camera_hw_bus2
-    chmod 0660 /dev/FM50AF    
-    chmod 0660 /dev/DW9714AF
-    chmod 0660 /dev/DW9718AF    
-    chmod 0660 /dev/GAF001AF
-    chmod 0660 /dev/GAF002AF
-    chmod 0660 /dev/GAF008AF
-	chmod 0660 /dev/BU6424AF
+    chmod 0660 /dev/FM50AF
     chmod 0660 /dev/CAM_CAL_DRV
-    chmod 0660 /dev/EEPROM_M24C08F
-
+    chmod 0660 /dev/S5K4E1GAAF
+    chmod 0660 /dev/OV5648AF
+    chmod 0660 /dev/GC5004AF
+    chmod 0660 /dev/S5K4H5YCAF
+    chmod 0660 /dev/S5K3H7YAF
+    
     chown system camera /dev/camera-sysram
     chown system camera /dev/camera-isp
     chown system camera /dev/camera-pipemgr
     chown system camera /dev/kd_camera_hw
     chown system camera /dev/kd_camera_flashlight
     chown system camera /dev/kd_camera_hw_bus2
-    chown system camera /dev/FM50AF    
-    chown system camera /dev/DW9714AF
-    chown system camera /dev/DW9718AF    
-    chown system camera /dev/GAF001AF
-    chown system camera /dev/GAF002AF
-    chown system camera /dev/GAF008AF
-	chown system camera /dev/BU6424AF
+    chown system camera /dev/FM50AF
     chown system camera /dev/CAM_CAL_DRV
-    chown system camera /dev/EEPROM_M24C08F
+    chown system camera /dev/S5K4E1GAAF
+    chown system camera /dev/OV5648AF
+    chown system camera /dev/GC5004AF
+    chown system camera /dev/S5K4H5YCAF
+   chown system camera /dev/S5K3H7YAF
 
     #MATV
     chmod 0660 /dev/MATV
@@ -522,6 +553,7 @@ on post-fs-data
 #
 
 
+
 # Encrypt phone function
     setprop vold.post_fs_data_done 1
 
@@ -572,6 +604,10 @@ on boot
     chmod 0770 /sys/power/tuxonice
     chmod 0220 /sys/power/tuxonice/do_hibernate
 
+    # FM Radio device node
+    exec /system/bin/mknod /dev/fm c 193 0
+    chmod 0777 /dev/fm
+    chown system media /dev/fm
 
 
 ## Thermal
@@ -654,7 +690,7 @@ on property:vold.decrypt=trigger_restart_framework
     
 on property:vold.decrypt=trigger_shutdown_framework
     start stop_modem
-
+    start msensord
 service stop_modem /system/bin/md_ctrl 0
     class main
     disabled
@@ -813,39 +849,8 @@ service bluetoothd /system/bin/bluetoothd -n
 #  External Modme control related services
 #
 
-service agpsd /system/bin/mtk_agpsd
-    class main
-    socket agpsd stream 660 gps system
-    socket agpsd2 stream 660 gps system
-    socket agpsd3 stream 660 gps system
-    user root
-    group gps ccci inet sdcard_r sdcard_rw misc
-    oneshot
 
-service mnld /system/xbin/mnld
-    class main
-    user root
-    group system gps inet misc sdcard_rw sdcard_r media_rw
-    socket mnld stream 660 gps system
-    oneshot
-
-service wifi2agps /system/bin/wifi2agps
-    class main
-    user root
-    group gps inet
-    oneshot
-
-service BGW /system/xbin/BGW
-    user root
-    group gps system radio
-    class main
-    oneshot
     
-# FM Radio device node
-   exec /system/bin/mknod /dev/fm c 193 0
-   chmod 0777 /dev/fm
-   chown system media /dev/fm
-
 service mdlogger /system/bin/mdlogger
     class main
     user shell
@@ -875,6 +880,12 @@ service msensord /system/bin/msensord
     class main
     oneshot
 
+service s62xd /system/bin/s62xd
+    disabled
+    user compass
+    group system
+    class main
+
 service ami304d /system/bin/ami304d
     user system
     group system
@@ -886,18 +897,24 @@ service memsicd /system/bin/memsicd
      oneshot
     user system
     group system
+    class main
+
+service memsicd3416x /system/bin/memsicd3416x
+     disabled
+	 user system
+    group system
+    class main
+    oneshot
 
 service akmd8975 /system/bin/akmd8975
     disabled
     user system
     group system
-    class main
 
 service akmd8963 /system/bin/akmd8963
-#    disabled
+    disabled
     user system
     group system
-    class main
 
 service akmd09911 /system/bin/akmd09911
     disabled
@@ -913,6 +930,13 @@ service mc6420d /system/bin/mc6420d
     disabled
     user system
     group system
+    class main
+    
+service qmc5983d /system/bin/qmc5983d
+     disabled
+	 user system
+    group system
+    class main
 
 service orientationd /system/bin/orientationd
     disabled
@@ -983,4 +1007,5 @@ service conn_launcher /system/bin/logwrapper /system/bin/6620_launcher -p /syste
 service enableswap /system/bin/sh /enableswap.sh
     class core
     oneshot	
+
 
