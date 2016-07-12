@@ -133,6 +133,11 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES+=\
     Gello 
 
+# YGPS
+PRODUCT_PACKAGES+=\
+    YGPS
+
+
 PRODUCT_COPY_FILES += \
 	$(LOCAL_PATH)/configs/media_codecs.xml:system/etc/media_codecs.xml \
 	$(LOCAL_PATH)/configs/platform.xml:system/etc/permissions/platform.xml \
